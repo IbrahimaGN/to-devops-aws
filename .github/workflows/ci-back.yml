@@ -1,0 +1,59 @@
+name: CI/CD Back
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'app/back/**'
+      - '.github/workflows/ci-back.yml'
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout du code
+        uses: actions/checkout@v4
+
+      - name: Connexion à Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build et push de l'image Back
+        uses: docker/build-push-action@v5
+        with:
+          context: ./app/back
+          push: true
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/todo-back:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/todo-back:${{ github.sha }}
+
+      # Back est en subnet privé : on passe par Front comme bastion (proxy_*)
+      - name: Copier le script de déploiement sur le Back (via bastion Front)
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.BACK_HOST }}
+          username: ubuntu
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          proxy_host: ${{ secrets.FRONT_HOST }}
+          proxy_username: ubuntu
+          proxy_key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: "scripts/deploy-back.sh"
+          target: "/tmp/"
+          strip_components: 1
+
+      - name: Déployer le conteneur Back (avec rollback automatique)
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.BACK_HOST }}
+          username: ubuntu
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          proxy_host: ${{ secrets.FRONT_HOST }}
+          proxy_username: ubuntu
+          proxy_key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            chmod +x /tmp/deploy-back.sh
+            IMAGE="${{ secrets.DOCKERHUB_USERNAME }}/todo-back" \
+            TAG="${{ github.sha }}" \
+            /tmp/deploy-back.sh

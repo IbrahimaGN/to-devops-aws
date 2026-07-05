@@ -1,0 +1,20 @@
+---
+- name: Créer le répertoire de déploiement de la base de données
+  file:
+    path: /opt/todo-db
+    state: directory
+    owner: ubuntu
+    group: ubuntu
+    mode: "0755"
+
+- name: Créer le répertoire de persistance des données PostgreSQL
+  file:
+    path: /opt/todo-db/data
+    state: directory
+    owner: "999"   # UID utilisé par l'image officielle postgres
+    group: "999"
+    mode: "0700"
+
+# Le conteneur PostgreSQL (image officielle, pas de Dockerfile custom conformément
+# au TP) est lancé par le pipeline de déploiement, monté sur /opt/todo-db/data
+# pour la persistance, avec les identifiants injectés via variables d'environnement.

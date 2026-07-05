@@ -1,0 +1,31 @@
+---
+# Playbook de provisioning de l'infrastructure Todo App MediShop.
+# Idempotent : ré-exécutable sans casser l'existant (modules Ansible déclaratifs uniquement).
+#
+# Usage :
+#   cd ansible/inventory && ./generate_inventory.sh && cd ..
+#   ansible-playbook playbook.yml
+
+- name: Provisioning commun (Docker + Docker Compose) sur toutes les instances
+  hosts: all
+  become: true
+  roles:
+    - common
+
+- name: Provisioning spécifique à l'instance Front (Nginx + config domaine)
+  hosts: front
+  become: true
+  roles:
+    - front
+
+- name: Provisioning spécifique à l'instance Back (répertoire app + .env)
+  hosts: back
+  become: true
+  roles:
+    - back
+
+- name: Provisioning spécifique à l'instance DB (volume de persistance PostgreSQL)
+  hosts: db
+  become: true
+  roles:
+    - db

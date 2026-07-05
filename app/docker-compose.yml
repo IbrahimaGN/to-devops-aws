@@ -1,0 +1,39 @@
+services:
+  front:
+    build: ./front
+    ports:
+      - "8080:8080"
+    depends_on:
+      - back
+    networks:
+      - todo-net
+
+  back:
+    build: ./back
+    env_file: .env
+    ports:
+      - "3000:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - todo-net
+
+  db:
+    image: postgres:16
+    env_file: .env
+    volumes:
+      - todo-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - todo-net
+
+networks:
+  todo-net:
+
+volumes:
+  todo-db-data:

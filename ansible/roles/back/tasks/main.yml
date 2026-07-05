@@ -1,0 +1,18 @@
+---
+- name: Créer le répertoire de déploiement de l'application Back
+  file:
+    path: /opt/todo-back
+    state: directory
+    owner: ubuntu
+    group: ubuntu
+    mode: "0755"
+
+- name: Déployer le fichier .env.example (les vraies valeurs seront injectées par la CI via GitHub Secrets)
+  template:
+    src: env.example.j2
+    dest: /opt/todo-back/.env.example
+    mode: "0644"
+
+# Le conteneur applicatif lui-même (docker run / docker compose up) est géré
+# par le pipeline GitHub Actions lors du déploiement (étape 4), pas par Ansible,
+# qui se limite ici au provisioning de l'hôte.

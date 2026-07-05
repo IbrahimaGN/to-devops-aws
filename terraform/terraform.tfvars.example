@@ -1,0 +1,15 @@
+# Copier ce fichier en terraform.tfvars et renseigner tes propres valeurs.
+# terraform.tfvars ne doit JAMAIS être versionné (voir .gitignore).
+
+aws_region   = "eu-west-3"
+project_name = "todo-medishop"
+environment  = "dev"
+
+# Ton IP publique actuelle, au format CIDR (ex: 105.235.12.34/32)
+# Récupérable via: curl ifconfig.me
+admin_ip_cidr = "0.0.0.0/32"
+
+# Nom de la paire de clés SSH déjà créée dans la console AWS EC2 (région ciblée)
+ssh_key_name = "todo-medishop-key"
+
+allocate_elastic_ip = false

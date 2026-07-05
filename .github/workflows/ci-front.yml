@@ -1,0 +1,53 @@
+name: CI/CD Front
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'app/front/**'
+      - '.github/workflows/ci-front.yml'
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout du code
+        uses: actions/checkout@v4
+
+      - name: Connexion à Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build et push de l'image Front
+        uses: docker/build-push-action@v5
+        with:
+          context: ./app/front
+          push: true
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/todo-front:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/todo-front:${{ github.sha }}
+
+      - name: Copier le script de déploiement sur le Front
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.FRONT_HOST }}
+          username: ubuntu
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: "scripts/deploy-front.sh"
+          target: "/tmp/"
+          strip_components: 1
+
+      - name: Déployer le conteneur Front (avec rollback automatique)
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.FRONT_HOST }}
+          username: ubuntu
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          envs: DOCKERHUB_USERNAME,GITHUB_SHA
+          script: |
+            chmod +x /tmp/deploy-front.sh
+            IMAGE="${{ secrets.DOCKERHUB_USERNAME }}/todo-front" \
+            TAG="${{ github.sha }}" \
+            /tmp/deploy-front.sh

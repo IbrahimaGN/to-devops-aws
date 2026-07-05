@@ -1,0 +1,58 @@
+---
+- name: Installer Nginx
+  apt:
+    name: nginx
+    state: present
+    update_cache: true
+
+- name: S'assurer que Nginx est démarré et actif
+  systemd:
+    name: nginx
+    state: started
+    enabled: true
+
+- name: Déployer la configuration du domaine (reverse proxy vers Back + statiques Front)
+  template:
+    src: nginx_todo.conf.j2
+    dest: /etc/nginx/sites-available/{{ domain_name }}.conf
+    mode: "0644"
+  notify: Recharger Nginx
+
+- name: Activer le site (lien symbolique dans sites-enabled)
+  file:
+    src: /etc/nginx/sites-available/{{ domain_name }}.conf
+    dest: /etc/nginx/sites-enabled/{{ domain_name }}.conf
+    state: link
+  notify: Recharger Nginx
+
+- name: Désactiver le site par défaut de Nginx
+  file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+  notify: Recharger Nginx
+
+- name: Vérifier la syntaxe de la configuration Nginx
+  command: nginx -t
+  register: nginx_test
+  changed_when: false
+
+- name: Installer Certbot et le plugin Nginx (pour le HTTPS via Let's Encrypt)
+  apt:
+    name:
+      - certbot
+      - python3-certbot-nginx
+    state: present
+
+- name: Créer le répertoire de build Angular (statiques servis par Nginx)
+  file:
+    path: /var/www/{{ domain_name }}
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: "0755"
+
+# NOTE : l'obtention effective du certificat Certbot nécessite que le DNS pointe déjà
+# vers l'IP publique du Front. Elle est volontairement laissée en commande manuelle
+# (ou à automatiser plus tard dans le pipeline CI/CD une fois le nom de domaine actif) :
+#
+#   sudo certbot --nginx -d {{ domain_name }} -m {{ certbot_email }} --agree-tos --non-interactive --redirect

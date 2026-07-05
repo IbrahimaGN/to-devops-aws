@@ -1,0 +1,4 @@
+---
+# DB est en subnet privé : même bastion que pour Back.
+ansible_ssh_common_args: >-
+  -o ProxyCommand="ssh -W %h:%p -q ubuntu@{{ bastion_host }} -i {{ ansible_ssh_private_key_file }}"
