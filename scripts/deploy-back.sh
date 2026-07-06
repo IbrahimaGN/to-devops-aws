@@ -6,6 +6,7 @@ IMAGE="${IMAGE:?Variable IMAGE manquante}"
 TAG="${TAG:?Variable TAG manquante}"
 ENV_FILE="/opt/todo-back/.env"
 
+
 echo "=== Déploiement de ${CONTAINER_NAME}:${TAG} ==="
 
 if [ ! -f "${ENV_FILE}" ]; then
