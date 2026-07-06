@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+
 CONTAINER_NAME="todo-back"
 IMAGE="${IMAGE:?Variable IMAGE manquante}"
 TAG="${TAG:?Variable TAG manquante}"
