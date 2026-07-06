@@ -14,6 +14,14 @@ resource "aws_security_group" "front" {
   }
 
   ingress {
+    description = "SSH depuis Internet pour deploiement CI CD (GitHub Actions IP dynamique, protection par cle uniquement)"
+    from_port   = var.ports.ssh
+    to_port     = var.ports.ssh
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
     description = "HTTP depuis Internet"
     from_port   = var.ports.http
     to_port     = var.ports.http
