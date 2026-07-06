@@ -57,3 +57,21 @@ jobs:
             IMAGE="${{ secrets.DOCKERHUB_USERNAME }}/todo-back" \
             TAG="${{ github.sha }}" \
             /tmp/deploy-back.sh
+
+      - name: Notifier par email (deploiement Back reussi)
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          username: ${{ secrets.GMAIL_USERNAME }}
+          password: ${{ secrets.GMAIL_APP_PASSWORD }}
+          subject: "✅ Deploiement Back reussi - Todo MediShop"
+          to: gningkhalilo49@gmail.com
+          from: GitHub Actions CI/CD
+          body: |
+            Le deploiement du Back a reussi.
+
+            Commit : ${{ github.sha }}
+            Branche : ${{ github.ref_name }}
+            Auteur : ${{ github.actor }}
+            Voir le run : ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
