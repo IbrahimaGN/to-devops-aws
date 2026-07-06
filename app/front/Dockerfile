@@ -9,12 +9,11 @@ RUN npm ci
 COPY . .
 RUN npm run build -- --configuration production
 
-# --- Stage 2 : image finale, ultra-légère, sert uniquement les fichiers statiques ---
+# --- Stage 2 : image finale, ultra-legere, sert uniquement les fichiers statiques ---
 FROM nginx:alpine
 
-# Angular 21 (application builder) génère dist/<nom-projet>/browser
-# Adapter <nom-projet> au nom réel défini dans angular.json
-COPY --from=builder /app/dist/todo-front/browser /usr/share/nginx/html
+# Angular 21 (application builder) genere dist/front/browser
+COPY --from=builder /app/dist/front/browser /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 8080

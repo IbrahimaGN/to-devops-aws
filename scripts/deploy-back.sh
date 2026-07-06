@@ -9,7 +9,7 @@ ENV_FILE="/opt/todo-back/.env"
 echo "=== Déploiement de ${CONTAINER_NAME}:${TAG} ==="
 
 if [ ! -f "${ENV_FILE}" ]; then
-  echo "ERREUR : ${ENV_FILE} introuvable. Copie-le manuellement une première fois (contient les secrets DB)." >&2
+  echo "ERREUR : ${ENV_FILE} introuvable. Voir note ci-dessous." >&2
   exit 1
 fi
 

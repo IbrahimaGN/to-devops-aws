@@ -1,4 +1,8 @@
 ---
-# DB est en subnet privé : même bastion que pour Back.
+# DB est en subnet prive, accessible en SSH uniquement depuis Back (regle du Security Group db-sg).
+# Chaine complete : poste admin -> front (bastion public) -> back (relais prive) -> db
+# On utilise ProxyJump (deux hotes chaines) et non un simple ProxyCommand via Front,
+# car db-sg n'autorise que les connexions provenant de back-sg (pas de front-sg).
 ansible_ssh_common_args: >-
-  -o ProxyCommand="ssh -W %h:%p -q ubuntu@{{ bastion_host }} -i {{ ansible_ssh_private_key_file }}"
+  -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null
+  -o ProxyJump=ubuntu@{{ bastion_host }},ubuntu@{{ hostvars['back']['ansible_host'] }}

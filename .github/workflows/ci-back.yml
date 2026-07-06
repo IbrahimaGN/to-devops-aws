@@ -29,7 +29,7 @@ jobs:
             ${{ secrets.DOCKERHUB_USERNAME }}/todo-back:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/todo-back:${{ github.sha }}
 
-      # Back est en subnet privé : on passe par Front comme bastion (proxy_*)
+      # Back est en subnet prive : on passe par Front comme bastion
       - name: Copier le script de déploiement sur le Back (via bastion Front)
         uses: appleboy/scp-action@v0.1.7
         with:

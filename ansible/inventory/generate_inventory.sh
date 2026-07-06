@@ -7,7 +7,7 @@
 
 set -euo pipefail
 
-TERRAFORM_DIR="../terraform"
+TERRAFORM_DIR="../../terraform"
 INVENTORY_FILE="./hosts.ini"
 SSH_KEY_PATH="${SSH_KEY_PATH:-~/.ssh/todo-medishop-key.pem}"
 
@@ -47,12 +47,10 @@ back ansible_host=${BACK_PRIVATE_IP} ansible_user=ubuntu ansible_ssh_private_key
 [db]
 db ansible_host=${DB_PRIVATE_IP} ansible_user=ubuntu ansible_ssh_private_key_file=${SSH_KEY_PATH}
 
-[front_private_ip]
-front_ip=${FRONT_PRIVATE_IP}
-
 [all:vars]
 ansible_python_interpreter=/usr/bin/python3
 bastion_host=${FRONT_PUBLIC_IP}
+front_private_ip=${FRONT_PRIVATE_IP}
 EOF
 
 echo "Inventaire généré : ${INVENTORY_FILE}"

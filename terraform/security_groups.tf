@@ -2,11 +2,11 @@
 
 resource "aws_security_group" "front" {
   name        = "${var.project_name}-front-sg"
-  description = "Autorise HTTP/HTTPS depuis Internet et SSH depuis l'IP admin uniquement"
+  description = "Autorise HTTP HTTPS depuis Internet et SSH depuis l IP admin uniquement"
   vpc_id      = aws_vpc.main.id
 
   ingress {
-    description = "SSH depuis l'IP de l'administrateur uniquement"
+    description = "SSH depuis l IP de l administrateur uniquement"
     from_port   = var.ports.ssh
     to_port     = var.ports.ssh
     protocol    = "tcp"
@@ -30,7 +30,7 @@ resource "aws_security_group" "front" {
   }
 
   egress {
-    description = "Tout trafic sortant autorisé (nécessaire pour appeler le Back, pull Docker, etc.)"
+    description = "Tout trafic sortant autorise (necessaire pour appeler le Back, pull Docker, etc.)"
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
@@ -66,7 +66,7 @@ resource "aws_security_group" "back" {
   }
 
   egress {
-    description = "Tout trafic sortant autorisé (pull Docker via NAT, accès DB)"
+    description = "Tout trafic sortant autorise (pull Docker via NAT, acces DB)"
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
@@ -94,7 +94,7 @@ resource "aws_security_group" "db" {
   }
 
   ingress {
-    description     = "SSH depuis le Back uniquement (relais bastion Front -> Back -> DB)"
+    description     = "SSH depuis le Back uniquement (relais bastion Front vers DB)"
     from_port       = var.ports.ssh
     to_port         = var.ports.ssh
     protocol        = "tcp"
@@ -102,7 +102,7 @@ resource "aws_security_group" "db" {
   }
 
   egress {
-    description = "Sortant autorisé (pull image postgres via NAT)"
+    description = "Sortant autorise (pull image postgres via NAT)"
     from_port   = 0
     to_port     = 0
     protocol    = "-1"

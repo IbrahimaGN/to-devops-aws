@@ -7,7 +7,6 @@ TAG="${TAG:?Variable TAG manquante}"
 
 echo "=== Déploiement de ${CONTAINER_NAME}:${TAG} ==="
 
-# Sauvegarde de l'image actuellement en cours d'exécution (pour rollback)
 CURRENT_IMAGE=$(docker inspect --format='{{.Config.Image}}' "${CONTAINER_NAME}" 2>/dev/null || echo "")
 
 echo "Pull de la nouvelle image..."

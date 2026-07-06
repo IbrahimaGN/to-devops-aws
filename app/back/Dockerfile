@@ -7,7 +7,6 @@ RUN npm ci --omit=dev
 
 COPY . .
 
-# Sécurité : ne pas exécuter le conteneur en root
 USER node
 
 EXPOSE 3000

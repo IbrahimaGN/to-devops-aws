@@ -45,7 +45,6 @@ jobs:
           host: ${{ secrets.FRONT_HOST }}
           username: ubuntu
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          envs: DOCKERHUB_USERNAME,GITHUB_SHA
           script: |
             chmod +x /tmp/deploy-front.sh
             IMAGE="${{ secrets.DOCKERHUB_USERNAME }}/todo-front" \
