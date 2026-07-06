@@ -4,6 +4,7 @@ set -euo pipefail
 CONTAINER_NAME="todo-front"
 IMAGE="${IMAGE:?Variable IMAGE manquante}"
 TAG="${TAG:?Variable TAG manquante}"
+BACKEND_HOST="${BACKEND_HOST:?Variable BACKEND_HOST manquante}"
 
 echo "=== Déploiement de ${CONTAINER_NAME}:${TAG} ==="
 
@@ -20,6 +21,7 @@ echo "Démarrage du nouveau conteneur..."
 docker run -d \
   --name "${CONTAINER_NAME}" \
   -p 8080:8080 \
+  -e BACKEND_HOST="${BACKEND_HOST}" \
   --restart unless-stopped \
   "${IMAGE}:${TAG}"
 
@@ -27,13 +29,16 @@ echo "Vérification du bon démarrage (5s)..."
 sleep 5
 
 if ! docker ps --filter "name=${CONTAINER_NAME}" --filter "status=running" | grep -q "${CONTAINER_NAME}"; then
-  echo "ÉCHEC du déploiement. Rollback en cours..."
+  echo "ÉCHEC du déploiement. Logs du conteneur :"
+  docker logs "${CONTAINER_NAME}" 2>&1 || true
+  echo "Rollback en cours..."
   docker rm -f "${CONTAINER_NAME}" 2>/dev/null || true
 
   if [ -n "${CURRENT_IMAGE}" ]; then
     docker run -d \
       --name "${CONTAINER_NAME}" \
       -p 8080:8080 \
+      -e BACKEND_HOST="${BACKEND_HOST}" \
       --restart unless-stopped \
       "${CURRENT_IMAGE}"
     echo "Rollback effectué vers ${CURRENT_IMAGE}"
