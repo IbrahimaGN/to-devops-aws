@@ -19,7 +19,6 @@ services:
     networks:
       - todo-net
 
-
   db:
     image: postgres:16
     env_file: .env
