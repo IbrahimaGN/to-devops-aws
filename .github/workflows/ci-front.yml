@@ -49,4 +49,5 @@ jobs:
             chmod +x /tmp/deploy-front.sh
             IMAGE="${{ secrets.DOCKERHUB_USERNAME }}/todo-front" \
             TAG="${{ github.sha }}" \
+            BACKEND_HOST="${{ secrets.BACK_HOST }}" \
             /tmp/deploy-front.sh

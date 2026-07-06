@@ -14,7 +14,8 @@ FROM nginx:alpine
 
 # Angular 21 (application builder) genere dist/front/browser
 COPY --from=builder /app/dist/front/browser /usr/share/nginx/html
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+ENV BACKEND_HOST=back
+COPY nginx.conf /etc/nginx/templates/default.conf.template
 
 EXPOSE 8080
 
