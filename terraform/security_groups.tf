@@ -93,7 +93,6 @@ resource "aws_security_group" "db" {
     security_groups = [aws_security_group.back.id]
   }
 
-
   ingress {
     description     = "SSH depuis le Back uniquement (relais bastion Front vers DB)"
     from_port       = var.ports.ssh
