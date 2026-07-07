@@ -14,7 +14,11 @@ FROM nginx:alpine
 
 # Angular 21 (application builder) genere dist/front/browser
 COPY --from=builder /app/dist/front/browser /usr/share/nginx/html
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+# BACKEND_HOST par defaut = "back" (fonctionne avec docker-compose en local).
+# En production, le CI/CD ecrase cette valeur avec l'IP privee reelle de Back.
+ENV BACKEND_HOST=back
+COPY nginx.conf /etc/nginx/templates/default.conf.template
 
 EXPOSE 8080
 
