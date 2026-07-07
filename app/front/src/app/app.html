@@ -1,25 +1,137 @@
-<main>
-  <h1>Todo MediShop</h1>
+<div class="app-shell">
+  <header class="topbar">
+    <div class="brand">
+      <svg class="brand-logo" width="36" height="36" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="48" height="48" rx="12" fill="url(#lilouGradient)"/>
+        <path d="M14 16h8v16h-8z" fill="white" opacity="0.95"/>
+        <path d="M25 16h9v4h-9z" fill="white" opacity="0.85"/>
+        <path d="M25 22h7v4h-7z" fill="white" opacity="0.7"/>
+        <path d="M25 28h9v4h-9z" fill="white" opacity="0.85"/>
+        <defs>
+          <linearGradient id="lilouGradient" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#6C63FF"/>
+            <stop offset="1" stop-color="#3B82F6"/>
+          </linearGradient>
+        </defs>
+      </svg>
+      <div class="brand-text">
+        <span class="brand-name">LiLouOffice</span>
+        <span class="brand-tagline">Todo &middot; MediShop</span>
+      </div>
+    </div>
 
-  <div class="add-form">
-    <input
-      type="text"
-      placeholder="Nouvelle tache..."
-      [(ngModel)]="newTitle"
-      (keyup.enter)="add()"
-    />
-    <button (click)="add()">Ajouter</button>
-  </div>
+    <button class="theme-toggle" (click)="toggleTheme()" [attr.aria-label]="'Basculer le theme'">
+      @if (theme() === 'light') {
+        <span>🌙 Sombre</span>
+      } @else {
+        <span>☀️ Clair</span>
+      }
+    </button>
+  </header>
 
-  <ul class="todo-list">
-    @for (todo of todos(); track todo.id) {
-      <li [class.done]="todo.done">
-        <input type="checkbox" [checked]="todo.done" (change)="toggle(todo)" />
-        <span>{{ todo.title }}</span>
-        <button class="delete" (click)="remove(todo)">Supprimer</button>
-      </li>
-    } @empty {
-      <li class="empty">Aucune tache pour le moment.</li>
-    }
-  </ul>
-</main>
+  <main class="content">
+    <section class="add-card">
+      <h2>Nouvelle tache</h2>
+      <div class="add-form">
+        <input
+          type="text"
+          class="input"
+          placeholder="Titre de la tache..."
+          [(ngModel)]="newTitle"
+          (keyup.enter)="add()"
+        />
+        <input
+          type="text"
+          class="input"
+          placeholder="Description (optionnel)"
+          [(ngModel)]="newDescription"
+          (keyup.enter)="add()"
+        />
+        <select class="select" [(ngModel)]="newPriority">
+          <option value="basse">Priorite basse</option>
+          <option value="normale">Priorite normale</option>
+          <option value="haute">Priorite haute</option>
+        </select>
+        <button class="btn btn-primary" (click)="add()">+ Ajouter</button>
+      </div>
+    </section>
+
+    <section class="list-card">
+      <div class="list-header">
+        <h2>Taches <span class="badge">{{ remainingCount() }} en cours</span></h2>
+        <div class="filters">
+          <button class="chip" [class.active]="filter() === 'toutes'" (click)="filter.set('toutes')">Toutes</button>
+          <button class="chip" [class.active]="filter() === 'actives'" (click)="filter.set('actives')">Actives</button>
+          <button class="chip" [class.active]="filter() === 'terminees'" (click)="filter.set('terminees')">Terminees</button>
+        </div>
+      </div>
+
+      <div class="table-wrapper">
+        <table class="todo-table">
+          <thead>
+            <tr>
+              <th class="col-status"></th>
+              <th class="col-title">Tache</th>
+              <th class="col-priority">Priorite</th>
+              <th class="col-date">Creee le</th>
+              <th class="col-actions">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (todo of filteredTodos(); track todo.id) {
+              <tr [class.done]="todo.done">
+                @if (editingId() === todo.id) {
+                  <td class="col-status">
+                    <input type="checkbox" [checked]="todo.done" (change)="toggle(todo)" />
+                  </td>
+                  <td class="col-title" colspan="2">
+                    <input class="input input-inline" type="text" [(ngModel)]="editTitle" placeholder="Titre" />
+                    <input class="input input-inline" type="text" [(ngModel)]="editDescription" placeholder="Description" />
+                    <select class="select select-inline" [(ngModel)]="editPriority">
+                      <option value="basse">Basse</option>
+                      <option value="normale">Normale</option>
+                      <option value="haute">Haute</option>
+                    </select>
+                  </td>
+                  <td class="col-date">{{ todo.created_at | date: 'dd/MM/yyyy' }}</td>
+                  <td class="col-actions">
+                    <button class="btn-icon btn-save" (click)="saveEdit(todo)" title="Enregistrer">✓</button>
+                    <button class="btn-icon btn-cancel" (click)="cancelEdit()" title="Annuler">✕</button>
+                  </td>
+                } @else {
+                  <td class="col-status">
+                    <input type="checkbox" [checked]="todo.done" (change)="toggle(todo)" />
+                  </td>
+                  <td class="col-title">
+                    <span class="todo-title">{{ todo.title }}</span>
+                    @if (todo.description) {
+                      <span class="todo-desc">{{ todo.description }}</span>
+                    }
+                  </td>
+                  <td class="col-priority">
+                    <span class="priority-badge" [attr.data-priority]="todo.priority">
+                      {{ priorityLabel(todo.priority) }}
+                    </span>
+                  </td>
+                  <td class="col-date">{{ todo.created_at | date: 'dd/MM/yyyy' }}</td>
+                  <td class="col-actions">
+                    <button class="btn-icon" (click)="startEdit(todo)" title="Modifier">✎</button>
+                    <button class="btn-icon btn-delete" (click)="remove(todo)" title="Supprimer">🗑</button>
+                  </td>
+                }
+              </tr>
+            } @empty {
+              <tr class="empty-row">
+                <td colspan="5">Aucune tache pour le moment. Ajoute-en une ci-dessus !</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <span>LiLouOffice &copy; {{ 2026 }} &mdash; Todo MediShop</span>
+  </footer>
+</div>

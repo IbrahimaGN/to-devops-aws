@@ -1,1 +1,46 @@
-/* You can add global styles to this file, and also import other style files */
+/* Variables de theme globales (clair/sombre) - doivent rester ici et non dans
+   un fichier CSS de composant, car :root correspond a <html>, en dehors de la
+   portee de l'encapsulation de style Angular (ViewEncapsulation.Emulated). */
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+:root[data-theme='light'] {
+  --bg: #eef0f6;
+  --surface: #ffffff;
+  --surface-alt: #f3f4f9;
+  --border: #d8dbe6;
+  --text: #1a1d29;
+  --text-muted: #6b7280;
+  --accent: #6c63ff;
+  --accent-2: #3b82f6;
+  --danger: #ef4444;
+  --success: #22c55e;
+  --shadow: 0 6px 24px rgba(20, 20, 40, 0.10);
+}
+
+:root[data-theme='dark'] {
+  --bg: #0f1017;
+  --surface: #1c1e2b;
+  --surface-alt: #262939;
+  --border: #363a52;
+  --text: #eef0f7;
+  --text-muted: #9295ab;
+  --accent: #8b83ff;
+  --accent-2: #5b9dff;
+  --danger: #f87171;
+  --success: #4ade80;
+  --shadow: 0 6px 28px rgba(0, 0, 0, 0.45);
+}
+
+body {
+  background: var(--bg);
+  transition: background 0.25s ease;
+}

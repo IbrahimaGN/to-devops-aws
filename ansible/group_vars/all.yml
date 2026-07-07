@@ -2,8 +2,8 @@
 # Variables communes à tous les hôtes.
 # Ecraser via -e "domain_name=xxx" ou dans group_vars/front.yml pour un vrai déploiement.
 
-domain_name: "todo.exemple.com"
-certbot_email: "admin@exemple.com"
+domain_name: "todo-medishop.duckdns.org"
+certbot_email: "gningkhalilo49@gmail.com"
 
 docker_compose_version: "v2.29.0"
 
@@ -11,6 +11,6 @@ app_back_port: 3000
 app_db_port: 5432
 
 # Nom des images Docker (poussées par la CI, cf. étape GitHub Actions)
-docker_registry: "docker.io/tonpseudo"
+docker_registry: "docker.io/ibrahima7505"
 front_image: "{{ docker_registry }}/todo-front"
 back_image: "{{ docker_registry }}/todo-back"
