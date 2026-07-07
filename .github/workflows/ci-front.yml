@@ -49,4 +49,24 @@ jobs:
             chmod +x /tmp/deploy-front.sh
             IMAGE="${{ secrets.DOCKERHUB_USERNAME }}/todo-front" \
             TAG="${{ github.sha }}" \
+            BACKEND_HOST="${{ secrets.BACK_HOST }}" \
             /tmp/deploy-front.sh
+      - name: Notifier par email (deploiement Front reussi)
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          username: ${{ secrets.GMAIL_USERNAME }}
+          password: ${{ secrets.GMAIL_APP_PASSWORD }}
+          subject: "✅ Deploiement Front reussi - Todo MediShop"
+          to: gningkhalilo49@gmail.com
+          from: GitHub Actions CI/CD
+          body: |
+            Le deploiement du Front a reussi.
+            votre application est maintenant accessible à l'adresse :
+              http://todo-medishop.duckdns.org/
+
+            Commit : ${{ github.sha }}
+            Branche : ${{ github.ref_name }}
+            Auteur : ${{ github.actor }}
+            Voir le run : ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
