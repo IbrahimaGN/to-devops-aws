@@ -64,7 +64,7 @@ jobs:
           body: |
             Le deploiement du Front a reussi.
             votre application est maintenant accessible à l'adresse :
-              http://todo-medishop.duckdns.org/
+              https://todo-medishop.duckdns.org/
 
             Commit : ${{ github.sha }}
             Branche : ${{ github.ref_name }}
