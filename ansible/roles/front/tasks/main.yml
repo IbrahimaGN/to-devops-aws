@@ -51,6 +51,7 @@
     group: www-data
     mode: "0755"
 
+
 # NOTE : l'obtention effective du certificat Certbot nécessite que le DNS pointe déjà
 # vers l'IP publique du Front. Elle est volontairement laissée en commande manuelle
 # (ou à automatiser plus tard dans le pipeline CI/CD une fois le nom de domaine actif) :
